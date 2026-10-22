@@ -65,10 +65,21 @@ async function main () {
   const keyFile = path.join(os.tmpdir(), `mock-passbolt-${process.pid}.key`)
   fs.writeFileSync(keyFile, userKeys.privateKey, { mode: 0o600 })
 
+  // The widget remembers the last server it trusted, and this mock mints a new
+  // server key on every run. Hide that state for the duration so a previous run
+  // against a real instance does not look like a fingerprint change (which is
+  // exactly the guard it should raise), then put it back.
+  const statePath = path.join(WIDGET, '.state.json')
+  const savedState = fs.existsSync(statePath) ? fs.readFileSync(statePath) : null
+  fs.rmSync(statePath, { force: true })
+
+  // Passbolt 5 nests the fields under data (v4 kept them flat)
   const secretPayload = JSON.stringify({
     object_type: 'PASSBOLT_SECRET_DATA',
-    password: 's3cret',
-    username: 'root'
+    data: {
+      password: 's3cret',
+      username: 'root'
+    }
   })
 
   // Passbolt 5.x encrypts the resource metadata itself; the list endpoint then
@@ -145,7 +156,7 @@ async function main () {
           }]
         })
       }
-      if (url.pathname === '/resources/res-1.json') {
+      if (url.pathname === '/secrets/resource/res-1.json') {
         const data = await openpgp.encrypt({
           message: await openpgp.createMessage({ text: secretPayload }),
           encryptionKeys: userPublic,
@@ -154,9 +165,11 @@ async function main () {
         return send({
           header: { message: 'OK' },
           body: {
-            id: 'res-1',
-            personal: true,
-            secrets: [{ user_id: USER_ID, data, modified_by: USER_ID }]
+            id: 'secret-1',
+            user_id: USER_ID,
+            resource_id: 'res-1',
+            data,
+            modified_by: USER_ID
           }
         })
       }
@@ -207,7 +220,10 @@ async function main () {
   } finally {
     await new Promise(resolve => httpServer.close(resolve))
     fs.rmSync(keyFile, { force: true })
-    fs.rmSync(path.join(WIDGET, '.state.json'), { force: true })
+    fs.rmSync(statePath, { force: true })
+    if (savedState) {
+      fs.writeFileSync(statePath, savedState, { mode: 0o600 })
+    }
   }
 }
 

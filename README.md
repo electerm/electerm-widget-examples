@@ -55,7 +55,23 @@ cd electerm-widget-examples
 | [`static-server/`](static-server/) | instance | express | 把目录用 HTTP 分享出去 |
 | [`ftp-server/`](ftp-server/) | instance | @electerm/ftp-srv | 把目录用 FTP 分享出去 |
 
-每个目录里都有中英双语的 `README.md`，写清了这个 widget 的配置项、实现要点和已知限制。`passbolt-search/` 另有 [`TESTING.md`](passbolt-search/TESTING.md)：一份可以用真实账号照着勾的验证流程 + 离线 mock 跑法。
+每个目录里都有中英双语的 `README.md`，写清了这个 widget 的配置项、实现要点和已知限制。每个目录里都有中英双语的 `README.md`，写清了这个 widget 的配置项、实现要点和已知限制。`passbolt-search/` 另有 [`TESTING.md`](passbolt-search/TESTING.md)：一份可以用真实账号照着勾的验证流程 + 离线 mock 跑法。
+
+### 本地 Passbolt 测试服务器
+
+不想拿生产实例试错，`scripts/` 里有一套 docker 脚本，起一台一次性的 Passbolt CE（mariadb + passbolt，端口 8088，不需要 docker compose）：
+
+```sh
+./scripts/passbolt-start.sh   # 建容器、跑迁移、等到 /auth/verify.json 有服务器公钥
+./scripts/passbolt-init.sh    # 造一个可登录的测试账号，打印 widget 要填的五个值
+./scripts/passbolt-stop.sh    # 停掉，数据留着；--purge 连容器和卷一起删
+```
+
+`passbolt-init.sh` 默认直接往数据库里写一个和「完成 setup」等价的账号（`users` / `profiles` / `gpgkeys` 三行 + 4096 位密钥），因为 Passbolt 5 的 setup 页面**强制要求装浏览器扩展**，没有扩展只显示一句 "Please install the browser extension"。想走真实页面就 `./scripts/passbolt-init.sh --browser`。
+
+`passbolt-init.sh` 还会往账号里播种 8 条样例条目，每种资源类型一条：简单密码、密码+描述（https / ssh / ftp 各一条，ssh 那条带非标准端口）、v4 TOTP、v5 默认、v5+TOTP、v5 note。它们用账号自己的公钥加密、用自己的私钥签名，和网页版里手工新建的条目等价，所以 widget 的 Search 第一次就有真实数据可点。`--no-samples` 跳过。
+
+结束时它打印 Server URL / User ID / GPG key file / Passphrase / 服务器指纹，并把私钥放在 `scripts/.passbolt/me.asc`（已 gitignore）。端口、账号、口令都可以用环境变量覆盖（`PASSBOLT_PORT`、`PASSBOLT_ADMIN_EMAIL`、`PASSBOLT_SEED_PASSPHRASE`…，全部见 `scripts/passbolt-lib.sh`）。Docker Hub 不通时加 `PASSBOLT_REGISTRY_MIRROR=docker.1panel.live`。
 
 ### 三种形态
 
@@ -181,7 +197,23 @@ Import **copies** the whole folder (including `node_modules`) to `<data dir>/wid
 | [`static-server/`](static-server/) | instance | express | Serve a folder over HTTP |
 | [`ftp-server/`](ftp-server/) | instance | @electerm/ftp-srv | Serve a folder over FTP |
 
-Every folder has a bilingual `README.md` covering its config fields, implementation notes and known limits. `passbolt-search/` also has [`TESTING.md`](passbolt-search/TESTING.md): a checklist you can walk through with a real account, plus an offline mock.
+Every folder has a bilingual `README.md` covering its config fields, implementation notes and known limits. Every folder has a bilingual `README.md` covering its config fields, implementation notes and known limits. `passbolt-search/` also has [`TESTING.md`](passbolt-search/TESTING.md): a checklist you can walk through with a real account, plus an offline mock.
+
+### Local Passbolt test server
+
+To avoid experimenting against a production instance, `scripts/` can bring up a throwaway Passbolt CE (mariadb + passbolt on port 8088, no docker compose needed):
+
+```sh
+./scripts/passbolt-start.sh   # containers, migrations, wait for a server key in /auth/verify.json
+./scripts/passbolt-init.sh    # create a login-capable test account, print the five widget values
+./scripts/passbolt-stop.sh    # stop, keep data; --purge removes containers and volumes
+```
+
+`passbolt-init.sh` seeds the account straight into the database — the same three rows a finished setup would leave (`users` / `profiles` / `gpgkeys`) plus a 4096-bit key — because Passbolt 5's setup page refuses to run without the Passbolt browser extension. Add `--browser` to go through the real page instead.
+
+`passbolt-init.sh` also seeds eight sample entries, one per resource type: a simple password, a password with description (https / ssh / ftp, the ssh one on a non-standard port), a v4 TOTP entry, a v5 default entry, v5 with TOTP, and a v5 note. They are encrypted to the account's own key and signed with it — the same thing creating them by hand in the web UI would produce — so the widget's first Search has real data. `--no-samples` skips them.
+
+It finishes by printing Server URL / User ID / GPG key file / Passphrase / server fingerprint and leaves the private key at `scripts/.passbolt/me.asc` (gitignored). Port, account and passphrase are overridable through the environment (`PASSBOLT_PORT`, `PASSBOLT_ADMIN_EMAIL`, `PASSBOLT_SEED_PASSPHRASE`, … — all in `scripts/passbolt-lib.sh`). Blocked Docker Hub? `PASSBOLT_REGISTRY_MIRROR=docker.1panel.live`.
 
 ### Three shapes
 

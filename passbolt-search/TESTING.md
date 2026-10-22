@@ -23,6 +23,51 @@
 
 ---
 
+## 本仓库自带一台：本地 Passbolt
+
+不想拿生产服务器练手，也不想在别人的实例上试错误路径：用 docker 起一台一次性的。
+
+```sh
+./scripts/passbolt-start.sh     # mariadb + passbolt CE，映射到 http://localhost:8088
+./scripts/passbolt-init.sh      # 造一个可登录的测试账号，打印 widget 要填的值
+./scripts/passbolt-stop.sh      # 停掉，数据留着；--purge 连容器和卷一起删
+```
+
+`passbolt-init.sh` 结束时会打印 **Server URL / User ID / GPG key file / Passphrase / 服务器指纹**，
+私钥落在 `scripts/.passbolt/me.asc`。照着填进 widget，第一次 Connect 出现的指纹和打印的那行比对，
+一致就 Trust —— 这一步本身就是在验证「带外核对指纹」这条设计。
+
+为什么不是「注册 → 浏览器设口令」：Passbolt 5 的 setup 页面要求先装 Passbolt 浏览器扩展，没装只显示
+"Please install the browser extension"（那个 Unsafe mode 只是个文档链接）。所以默认走数据库播种：
+写入和完成 setup 等价的 `users` / `profiles` / `gpgkeys` 三行，账号可以正常走 JWT challenge 登录，
+只是没消耗 setup token。想要真实页面流程：`./scripts/passbolt-init.sh --browser`（先装扩展）。
+
+- 服务器是 **http**（`http://localhost:8088`），对 widget 没问题；扩展那套要求是给网页版用的
+- 不要在这个账号上开 **MFA**，widget 不支持，这正好也是 A.8 要验证的边界
+- 账号自带 8 条样例条目（见下），不需要网页版造数据；`--no-samples` 可以不要它们
+- Docker Hub 不通时：`PASSBOLT_REGISTRY_MIRROR=docker.1panel.live ./scripts/passbolt-start.sh`
+
+通道本身已在 **Passbolt CE 5.17.0** 上实测：connect → 指纹 → trust → search → lock 全通过。
+
+清空重来：`./scripts/passbolt-stop.sh --purge && ./scripts/passbolt-init.sh`。
+
+## 样例条目（init 默认播种）
+
+| 条目 | 资源类型 | 用途 |
+| --- | --- | --- |
+| Jenkins API token | 简单密码（v4） | 没有用户名、没有 URI，检查空列显示 |
+| Example website | 密码+描述（v4） | https，正常的一条 |
+| Router SSH | 密码+描述（v4） | `ssh://root@10.0.0.12:2222`，检查 **SSH** 按钮读端口 |
+| Deploy FTP | 密码+描述（v4） | `ftp://deploy@files.example.com:2121`，检查 **FTP** 按钮 |
+| VPN gateway | 密码+描述+TOTP（v4） | v4 的 totp 是 JSON **字符串** |
+| v5 default entry | v5 默认 | 元数据加密（user_key），secret 是 `{object_type, data}` |
+| v5 with TOTP | v5 带 TOTP | v5 的 totp 是**对象** |
+| v5 note | v5 note | 没有密码、没有用户名，只有描述 |
+
+全部用账号自己的公钥加密并签名（`users` / `resources` / `secrets` / `secret_revisions` / `permissions` 五张表，权限 type=15），和网页版新建的条目等价。重复运行 `init` 会先删掉这 8 个固定 id 再插入，所以不会越积越多。
+
+照着这 8 条勾：Search 里能看到「Scanned 8 entries, decrypted 8」，每条 **Details** 都能出密码（v5 那几条以前会报 `V4 related fields are not supported for V5`，已修），两条 TOTP 显示 `TOTP secret` + `TOTP settings`，v5 note 只有描述，SSH 按钮开出来是 `10.0.0.12:2222`。
+
 ## A. 真实 Passbolt 账号
 
 ### 0. 前置条件
@@ -157,6 +202,52 @@ Then: Import → fill Server URL / User ID / key file / passphrase (leave Search
 and submit → row buttons **Details** / **SSH**.
 
 **MFA accounts are not supported** (the login fails with an explicit `requires MFA` message). The tick-list is section A below.
+
+## Built in: a local Passbolt
+
+If you would rather not experiment against a production instance, this repo can bring up a throwaway one.
+
+```sh
+./scripts/passbolt-start.sh     # mariadb + passbolt CE on http://localhost:8088
+./scripts/passbolt-init.sh      # create a login-capable test account, print the widget values
+./scripts/passbolt-stop.sh      # stop, keep data; --purge removes containers and volumes
+```
+
+`passbolt-init.sh` prints **Server URL / User ID / GPG key file / Passphrase / server fingerprint** and
+leaves the private key at `scripts/.passbolt/me.asc`. Paste those in, then compare the fingerprint the widget
+shows on the first Connect with the printed one before trusting — that comparison is the point of the design.
+
+Why not "register, then set a passphrase in the browser": Passbolt 5's setup page requires the Passbolt
+browser extension and otherwise only says "Please install the browser extension" (the Unsafe mode link is
+just documentation). So the default seeds the account into the database — the same `users` / `profiles` /
+`gpgkeys` rows a finished setup would leave. It logs in through the normal JWT challenge, it just never
+consumed a setup token. For the real page: `./scripts/passbolt-init.sh --browser` (install the extension first).
+
+- The server is plain **http** on localhost — fine for the widget (the extension rule does not apply)
+- Do not enable **MFA** on this account; the widget has no TOTP prompt, which is exactly what step A.8 checks
+- The account ships with eight sample entries (below), so you do not need the web UI to get data; `--no-samples` leaves them out
+- Behind a blocked Docker Hub: `PASSBOLT_REGISTRY_MIRROR=docker.1panel.live ./scripts/passbolt-start.sh`
+
+The whole path was exercised against **Passbolt CE 5.17.0**: connect → fingerprint → trust → search → lock.
+
+Start over with `./scripts/passbolt-stop.sh --purge && ./scripts/passbolt-init.sh`.
+
+## Sample entries (seeded by init)
+
+| Entry | Resource type | What it exercises |
+| --- | --- | --- |
+| Jenkins API token | Simple password (v4) | no username, no URI — the empty-column path |
+| Example website | Password with description (v4) | the ordinary case, https |
+| Router SSH | Password with description (v4) | `ssh://root@10.0.0.12:2222` — the **SSH** button must pick up the port |
+| Deploy FTP | Password with description (v4) | `ftp://deploy@files.example.com:2121` — the **FTP** button |
+| VPN gateway | Password, description and TOTP (v4) | v4 keeps the TOTP as a JSON **string** |
+| v5 default entry | v5 default | encrypted metadata (user_key), secret is `{object_type, data}` |
+| v5 with TOTP | v5 with TOTP | v5 keeps the TOTP as an **object** |
+| v5 note | v5 note | no password, no username, description only |
+
+All of them are encrypted to the account's own key and signed with it (rows in `users` / `resources` / `secrets` / `secret_revisions` / `permissions`, permission type 15) — the same thing the web UI would write. Re-running `init` deletes those eight fixed ids first, so they do not pile up.
+
+Walk through them: Search should say "Scanned 8 entries, decrypted 8", every **Details** must produce a password (the v5 ones used to fail with `V4 related fields are not supported for V5`), both TOTP entries show `TOTP secret` + `TOTP settings`, the v5 note shows only a description, and **SSH** on Router SSH opens `10.0.0.12:2222`.
 
 ## A. Real Passbolt account
 

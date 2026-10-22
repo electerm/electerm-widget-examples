@@ -65,6 +65,8 @@ passbolt-search/
 - **不支持 MFA 账号**（登录时会明确报错）
 - 搜索范围是资源元数据（名称、用户名、描述、URI、自定义字段），不搜索密码字段
 - 共享条目（`metadata_key_type: shared_key`）需要你对那条的 metadata key 有读权限，否则计入 skipped
+- 条目格式支持 v4（明文元数据）和 v5（加密元数据）两种；密码统一走 `GET /secrets/resource/<id>`，因为 v4 的 `contain[secret]` 对 v5 条目会返回 400 `V4 related fields are not supported for V5`
+- TOTP 只**展示** secret key 和参数（位数 / 周期 / 算法），不生成动态验证码
 - FTP / Telnet 是明文协议，只在可信网络用
 - 重新导入会用源目录的 `.state.json` 覆盖，指纹要再确认一次
 
@@ -74,7 +76,7 @@ passbolt-search/
 node scripts/passbolt-mock-and-run.js
 ```
 
-起一个 127.0.0.1 的假服务器、现场生成一次性密钥，把 widget 走一遍 connect → trust → search → details → openSsh → lock（资源元数据按 Passbolt 5 的 `user_key` 加密形式）。它打印 `PASS` 并删掉自己产生的 `.state.json`，之后你仍然可以正常导入这个文件夹。这只证明客户端逻辑，不证明你的服务器配置。
+起一个 127.0.0.1 的假服务器、现场生成一次性密钥，把 widget 走一遍 connect → trust → search → details → openSsh → lock（资源元数据按 Passbolt 5 的 `user_key` 加密形式）。它打印 `PASS`，跑之前会把已存在的 `.state.json`（已信任的服务器指纹）临时移开、跑完再还原 —— 假服务器每次都是新密钥，否则会被指纹变更保护挡下来。这只证明客户端逻辑，不证明你的服务器配置。
 
 ---
 
@@ -136,6 +138,8 @@ Export the key with `gpg --export-secret-keys --armor <you@example.com> > me.asc
 - **No MFA support** (fails with an explicit message)
 - Search covers resource metadata (name, username, description, URIs, custom fields), never secret fields
 - Shared entries (`metadata_key_type: shared_key`) are skipped unless your user has a readable metadata key for them
+- Both entry formats work: v4 (plaintext metadata) and v5 (encrypted metadata). The secret always comes from `GET /secrets/resource/<id>`, because the v4 `contain[secret]` view answers 400 `V4 related fields are not supported for V5` on v5 entries
+- TOTP is **displayed** (secret key plus digits / period / algorithm); no one-time codes are generated
 - FTP and Telnet are plaintext protocols; use them on trusted networks only
 - Re-importing overwrites `.state.json` with the source copy, so the fingerprint is confirmed once more
 

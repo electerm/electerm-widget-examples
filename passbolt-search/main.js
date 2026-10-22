@@ -620,37 +620,62 @@ async function search (query) {
   }
 }
 
+// GET /secrets/resource/<id> serves both legacy and v5 entries. Asking the v4
+// resource view for contain[secret] answers 400 "V4 related fields are not
+// supported for V5" as soon as the entry carries encrypted metadata, so that
+// endpoint cannot be the one we rely on.
 async function getSecret (resourceId) {
   if (!activeSession) {
     throw new Error('The Passbolt session is closed. Connect again.')
   }
   const result = await request(
-    `${activeSession.baseUrl}/resources/${encodeURIComponent(resourceId)}.json?contain[secret]=1&contain[resource-type]=1`,
+    `${activeSession.baseUrl}/secrets/resource/${encodeURIComponent(resourceId)}.json`,
     {},
     activeSession
   )
-  const resource = bodyOf(result)
-  if (!resource || !Array.isArray(resource.secrets)) {
+  const secret = bodyOf(result)
+  if (!secret || !secret.data) {
     throw new Error('The secret of this entry is not available.')
   }
-  const secret = resource.secrets.find(item => item.user_id === activeSession.userId)
-  if (!secret) {
-    throw new Error('No encrypted copy of this entry was found for your user.')
-  }
-  const verificationKey = resource.personal
+  const authorId = secret.modified_by || secret.created_by
+  const verificationKey = !authorId || authorId === activeSession.userId
     ? activeSession.ownPublicKey
-    : await getUserPublicKey(secret.modified_by || resource.modified_by || resource.created_by)
+    : await getUserPublicKey(authorId)
   const clear = await decryptAndVerify(secret.data, activeSession.privateKey, verificationKey)
-  let data
+  let payload
   try {
-    data = JSON.parse(clear)
+    payload = JSON.parse(clear)
   } catch (e) {
-    data = { password: clear }
+    payload = { password: clear }
   }
-  if (data.object_type && data.object_type !== 'PASSBOLT_SECRET_DATA') {
+  return normalizeSecret(payload)
+}
+
+// v4 secrets are flat ({password, description, totp}); v5 wraps them as
+// {object_type: PASSBOLT_SECRET_DATA, data: {...}}. v4 keeps the TOTP as a JSON
+// string, v5 as an object, so both are normalised here instead of at every
+// consumer.
+function normalizeSecret (payload) {
+  if (!payload || typeof payload !== 'object') {
+    return { password: payload == null ? '' : String(payload) }
+  }
+  let data = payload
+  if (payload.object_type === 'PASSBOLT_SECRET_DATA') {
+    // v5 nests the fields under data; a flat payload that only carries the
+    // marker (some servers and fixtures do that) is left as is
+    if (payload.data && typeof payload.data === 'object') {
+      data = payload.data
+    }
+  } else if (payload.object_type) {
     throw new Error('The Passbolt secret type is invalid.')
   }
-  return data
+  const normalized = { ...data }
+  if (typeof normalized.totp === 'string' && normalized.totp.trim()) {
+    try {
+      normalized.totp = JSON.parse(normalized.totp)
+    } catch (e) {}
+  }
+  return normalized
 }
 
 async function lock () {
@@ -806,16 +831,38 @@ async function trust (config = {}) {
 
 function secretDetails (row, secret) {
   const details = [
-    { label: 'Name', value: row.name, copy: true },
-    { label: 'Username', value: secret.username || row.username || '', copy: true },
-    { label: 'Password', value: secret.password || '', secret: true },
-    { label: 'URI', value: row.uri || '', copy: true }
+    { label: 'Name', value: row.name, copy: true }
   ]
+  const username = secret.username || row.username || ''
+  if (username) {
+    details.push({ label: 'Username', value: username, copy: true })
+  }
+  // notes and TOTP-only entries have no password; an empty row would just be
+  // noise in the panel
+  if (secret.password) {
+    details.push({ label: 'Password', value: secret.password, secret: true })
+  }
+  if (row.uri) {
+    details.push({ label: 'URI', value: row.uri, copy: true })
+  }
   if (secret.description) {
     details.push({ label: 'Description', value: secret.description, copy: true })
   }
+  if (secret.totp && typeof secret.totp === 'object') {
+    if (secret.totp.secret_key) {
+      details.push({ label: 'TOTP secret', value: secret.totp.secret_key, copy: true })
+    }
+    const settings = [
+      secret.totp.digits ? `${secret.totp.digits} digits` : '',
+      secret.totp.period ? `${secret.totp.period}s` : '',
+      secret.totp.algorithm || ''
+    ].filter(Boolean).join(', ')
+    if (settings) {
+      details.push({ label: 'TOTP settings', value: settings, copy: true })
+    }
+  }
   Object.entries(secret)
-    .filter(([name, value]) => !['object_type', 'password', 'username', 'description'].includes(name) && value != null)
+    .filter(([name, value]) => !['object_type', 'password', 'username', 'description', 'totp'].includes(name) && value != null && value !== '')
     .forEach(([name, value]) => {
       details.push({
         label: name,

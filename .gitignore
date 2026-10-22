@@ -3,3 +3,5 @@ node_modules/
 *.log
 # runtime state written next to a widget's main.js
 .state.json
+# local passbolt rig: exported test key + state.env
+scripts/.passbolt/
