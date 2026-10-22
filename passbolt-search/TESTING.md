@@ -4,6 +4,23 @@
 
 不要在任何 issue / 截图里贴私钥、口令或解密出来的密码。
 
+## 支持，先看最短路径
+
+这个 widget 对**真实账号**是支持的：登录走的就是 Passbolt 的 JWT challenge（`POST /auth/jwt/login.json`，
+用你的私钥签名、服务器公钥验签），和网页版是同一套流程，只是没有浏览器、没有 MFA。
+
+需要四样东西，缺一不可：
+
+1. **服务器启用了 JWT 认证插件** —— Passbolt 5.x 默认启用；`curl -s https://<server>/auth/verify.json` 有 JSON 就说明服务在
+2. **你的 user UUID** —— 网页版 Users / Manage Users & Groups → 点开自己 → 地址栏 `/app/users/view/<UUID>`
+3. **你当前那把私钥** —— `gpg --export-secret-keys --armor <你的邮箱> > /tmp/me.asc`（或网页版设置里的 "Download my key"）
+4. **私钥口令** —— 这把 key 有口令才需要
+
+然后：Import → 填 Server URL / User ID / key file / passphrase（Search 先留空）→ **Connect / search**
+→ 首次出现服务器指纹，带外核对一致 → **Trust this key and connect** → 填 Search 再提交 → 行上的 **Details** / **SSH**。
+
+**MFA 账号不支持**（登录时会明确报 `requires MFA`），服务器必须能走 JWT 插件。逐项勾选见下面 A 节。
+
 ---
 
 ## A. 真实 Passbolt 账号
@@ -83,7 +100,7 @@ cat "$(electerm data dir)/widgets/passbolt-search/.state.json"   # 或源目录�
 ### 9. 卸载
 
 - [ ] 列表里 hover 该 widget → 删除按钮 → 确认
-- [ ] `<data dir>/widgets/passbolt` 消失
+- [ ] `<data dir>/widgets/passbolt-search` 消失
 
 ---
 
@@ -122,6 +139,24 @@ node scripts/passbolt-mock-and-run.js
 Two ways to verify: **A. real account** (recommended — it also proves your server config) and **B. offline mock** (no server; proves the client logic only). Work through it top to bottom; the troubleshooting table at the end tells you where you stopped.
 
 Never paste keys, passphrases or decrypted passwords into an issue or screenshot.
+
+## Supported — the short path
+
+Real accounts work: login is Passbolt's JWT challenge (`POST /auth/jwt/login.json`, signed with your
+private key and verified against the server key), i.e. the same flow the web UI uses — no browser, no MFA.
+
+Four things, all required:
+
+1. **The JWT authentication plugin is enabled** — default on Passbolt 5.x; `curl -s https://<server>/auth/verify.json` returning JSON means the API is up
+2. **Your user UUID** — web UI: Users / Manage Users & Groups → yourself → `/app/users/view/<UUID>`
+3. **Your current private key** — `gpg --export-secret-keys --armor <you@example.com> > /tmp/me.asc`, or "Download my key" in Passbolt
+4. **The key passphrase** — only if that key has one
+
+Then: Import → fill Server URL / User ID / key file / passphrase (leave Search empty) → **Connect / search**
+→ compare the server fingerprint out of band on first connect → **Trust this key and connect** → fill Search
+and submit → row buttons **Details** / **SSH**.
+
+**MFA accounts are not supported** (the login fails with an explicit `requires MFA` message). The tick-list is section A below.
 
 ## A. Real Passbolt account
 
@@ -195,7 +230,7 @@ Fill Server URL, User ID, GPG key file, passphrase; leave Search empty → **Con
 ### 9. Uninstall
 
 - [ ] hover the widget in the list → delete → confirm
-- [ ] `<data dir>/widgets/passbolt` is gone
+- [ ] `<data dir>/widgets/passbolt-search` is gone
 
 ## B. Offline mock
 
