@@ -1,0 +1,5 @@
+node_modules/
+.DS_Store
+*.log
+# runtime state written next to a widget's main.js
+.state.json

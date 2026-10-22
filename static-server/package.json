@@ -1,0 +1,73 @@
+{
+  "name": "static-server",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Serve a folder over HTTP from electerm",
+  "main": "main.js",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.21.2"
+  },
+  "electerm": {
+    "id": "static-server",
+    "name": "Static File Server",
+    "description": "Serve a local folder over HTTP, with access logging in the widget instance log.",
+    "version": "1.0.0",
+    "type": "instance",
+    "configs": [
+      {
+        "name": "directory",
+        "label": "Folder to serve",
+        "type": "directory",
+        "required": true,
+        "default": "",
+        "description": "Leave empty to serve your home directory."
+      },
+      {
+        "name": "host",
+        "label": "Bind address",
+        "type": "string",
+        "default": "127.0.0.1",
+        "description": "127.0.0.1 keeps it local. 0.0.0.0 exposes it to your network."
+      },
+      {
+        "name": "port",
+        "label": "Port",
+        "type": "number",
+        "default": 3456
+      },
+      {
+        "name": "index",
+        "label": "Index file",
+        "type": "string",
+        "default": "index.html"
+      },
+      {
+        "name": "dotfiles",
+        "label": "Dotfiles",
+        "type": "select",
+        "default": "allow",
+        "choices": [
+          { "label": "allow", "value": "allow" },
+          { "label": "deny", "value": "deny" },
+          { "label": "ignore", "value": "ignore" }
+        ],
+        "description": "How to treat .git, .env and friends."
+      },
+      {
+        "name": "maxAge",
+        "label": "Cache max-age (ms)",
+        "type": "number",
+        "default": 0,
+        "description": "0 disables the Cache-Control max-age header."
+      },
+      {
+        "name": "autoRun",
+        "label": "Auto run",
+        "type": "boolean",
+        "default": false,
+        "description": "Start this server when the app launches."
+      }
+    ]
+  }
+}

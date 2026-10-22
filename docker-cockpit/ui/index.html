@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='utf-8'>
+  <title>Docker Cockpit</title>
+  <link rel='stylesheet' href='style.css'>
+</head>
+<body>
+  <header class='bar'>
+    <div class='brand'>
+      <span id='meta' class='muted'>loading…</span>
+    </div>
+    <div class='tools'>
+      <input id='filter' type='search' placeholder='filter' autocomplete='off'>
+      <label class='auto'><input id='auto' type='checkbox'> auto</label>
+      <button id='refresh' class='ghost' title='Refresh now'>refresh</button>
+    </div>
+  </header>
+
+  <p id='banner' class='banner' hidden></p>
+
+  <main id='list' class='list'></main>
+
+  <section id='logs' class='logs' hidden>
+    <div class='logs-head'>
+      <span id='logs-title' class='muted elli'></span>
+      <span class='grow'></span>
+      <span id='logs-time' class='muted'></span>
+      <button id='logs-close' class='ghost' title='Close'>close</button>
+    </div>
+    <pre id='logs-body' class='logs-body'></pre>
+  </section>
+
+  <footer class='foot'>
+    <span id='status' class='muted'></span>
+  </footer>
+
+  <script src='app.js'></script>
+</body>
+</html>

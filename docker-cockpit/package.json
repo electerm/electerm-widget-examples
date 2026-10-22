@@ -1,0 +1,16 @@
+{
+  "name": "docker-cockpit",
+  "version": "1.0.0",
+  "private": true,
+  "description": "List, start, stop and read logs of local docker containers from electerm",
+  "main": "main.js",
+  "license": "MIT",
+  "electerm": {
+    "id": "docker-cockpit",
+    "name": "Docker Cockpit",
+    "description": "Your local containers at a glance: state, ports, logs, start/stop/restart, and a ready-to-paste docker exec command.",
+    "version": "1.0.0",
+    "type": "frontend",
+    "ui": "ui/index.html"
+  }
+}

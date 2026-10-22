@@ -1,0 +1,63 @@
+{
+  "name": "rename-files",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Batch rename files with a template, preview first",
+  "main": "main.js",
+  "license": "MIT",
+  "electerm": {
+    "id": "rename-files",
+    "name": "File Renamer",
+    "description": "Batch rename files in a folder. Nothing is touched until you confirm the preview.",
+    "version": "1.0.0",
+    "type": "frontend",
+    "submitLabel": "Preview",
+    "persist": true,
+    "configs": [
+      {
+        "name": "directory",
+        "label": "Folder",
+        "type": "directory",
+        "required": true,
+        "description": "Folder holding the files to rename."
+      },
+      {
+        "name": "template",
+        "label": "New name template",
+        "type": "string",
+        "default": "{name}-{n}.{ext}",
+        "required": true,
+        "description": "Tags: {name} original name, {n} counter, {n:3} padded counter, {ext} extension, {date} YYYY-MM-DD, {time} HH-mm-ss, {random} 6 chars, {parent} parent folder."
+      },
+      {
+        "name": "fileTypes",
+        "label": "File types",
+        "type": "string",
+        "default": "*",
+        "placeholder": "jpg,png,gif or *",
+        "description": "Comma separated extensions, or * for every file."
+      },
+      {
+        "name": "startNumber",
+        "label": "Start number",
+        "type": "number",
+        "default": 1,
+        "description": "First value of the {n} counter."
+      },
+      {
+        "name": "includeSubfolders",
+        "label": "Include subfolders",
+        "type": "boolean",
+        "default": false,
+        "description": "Walk into subfolders as well."
+      },
+      {
+        "name": "preserveCase",
+        "label": "Keep original case",
+        "type": "boolean",
+        "default": true,
+        "description": "Turn off to lowercase {name}."
+      }
+    ]
+  }
+}

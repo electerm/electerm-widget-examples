@@ -1,0 +1,71 @@
+{
+  "name": "ftp-server",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Share a folder over FTP from electerm",
+  "main": "main.js",
+  "license": "MIT",
+  "dependencies": {
+    "@electerm/ftp-srv": "^1.0.6"
+  },
+  "electerm": {
+    "id": "ftp-server",
+    "name": "Local FTP Server",
+    "description": "Share a local folder over FTP. Passive ports are fixed to 50000-51000 so a firewall rule is possible.",
+    "version": "1.0.0",
+    "type": "instance",
+    "configs": [
+      {
+        "name": "directory",
+        "label": "Folder to share",
+        "type": "directory",
+        "required": true,
+        "default": "",
+        "description": "Leave empty to share your home directory."
+      },
+      {
+        "name": "host",
+        "label": "Bind address",
+        "type": "string",
+        "default": "127.0.0.1"
+      },
+      {
+        "name": "port",
+        "label": "Port",
+        "type": "number",
+        "default": 2121
+      },
+      {
+        "name": "anonymous",
+        "label": "Allow anonymous",
+        "type": "boolean",
+        "default": false
+      },
+      {
+        "name": "username",
+        "label": "Username",
+        "type": "string",
+        "default": "ftpuser"
+      },
+      {
+        "name": "password",
+        "label": "Password",
+        "type": "string",
+        "default": "ftppass"
+      },
+      {
+        "name": "pasvUrl",
+        "label": "PASV address",
+        "type": "string",
+        "default": "",
+        "description": "Address advertised in PASV replies. Leave empty to auto-detect; set it when behind NAT or with several interfaces."
+      },
+      {
+        "name": "autoRun",
+        "label": "Auto run",
+        "type": "boolean",
+        "default": false
+      }
+    ]
+  }
+}
