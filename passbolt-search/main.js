@@ -1,6 +1,8 @@
 /**
  * Passbolt Search — an electerm config-mode widget.
  *
+ * Based on code by GitHub user @palsanyi (https://github.com/palsanyi).
+ *
  * There is no UI in this folder: electerm renders the form from
  * `electerm.configs` in package.json, calls `run(config)` on submit, and draws
  * the object `run` returns (message/details/table/buttons/openTab). Row buttons
