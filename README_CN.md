@@ -16,6 +16,7 @@ widget 一个独立仓库，直接用仓库地址就能装 —— 不是玩具 d
 | [`electerm-widget-rename-files`](https://github.com/electerm/electerm-widget-rename-files) | config | 批量改名，先预览再执行 |
 | [`electerm-widget-static-server`](https://github.com/electerm/electerm-widget-static-server) | instance | 把目录用 HTTP 分享出去 |
 | [`electerm-widget-ftp-server`](https://github.com/electerm/electerm-widget-ftp-server) | instance | 把目录用 FTP 分享出去 |
+| [`electerm-widget-tftp`](https://github.com/electerm/electerm-widget-tftp) | instance | 把目录用 TFTP 分享出去，给路由器、交换机、PXE 用 |
 
 每个仓库都有英文 `README.md` 和中文 `README_CN.md`，写清了配置项、实现要点和已知限制。
 `electerm-widget-passbolt-search` 另有 `TESTING.md`：一份可以用真实账号照着勾的验证流程 + 离线 mock。
