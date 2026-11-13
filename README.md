@@ -16,6 +16,7 @@ and copies it to `<data dir>/widgets/<id>/`.
 | [`electerm-widget-rename-files`](https://github.com/electerm/electerm-widget-rename-files) | config | Batch rename with a preview step |
 | [`electerm-widget-static-server`](https://github.com/electerm/electerm-widget-static-server) | instance | Serve a folder over HTTP |
 | [`electerm-widget-ftp-server`](https://github.com/electerm/electerm-widget-ftp-server) | instance | Serve a folder over FTP |
+| [`electerm-widget-custom-css`](https://github.com/electerm/electerm-widget-custom-css) | instance | Put a stylesheet on electerm's own window; the wiki's CSS examples as presets |
 
 Every repository has `README.md` in English and `README_CN.md` in Chinese, covering its config fields,
 implementation notes and known limits. `electerm-widget-passbolt-search` also has `TESTING.md`: a
