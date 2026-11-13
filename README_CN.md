@@ -16,7 +16,11 @@ widget 一个独立仓库，直接用仓库地址就能装 —— 不是玩具 d
 | [`electerm-widget-rename-files`](https://github.com/electerm/electerm-widget-rename-files) | config | 批量改名，先预览再执行 |
 | [`electerm-widget-static-server`](https://github.com/electerm/electerm-widget-static-server) | instance | 把目录用 HTTP 分享出去 |
 | [`electerm-widget-ftp-server`](https://github.com/electerm/electerm-widget-ftp-server) | instance | 把目录用 FTP 分享出去 |
-| [`electerm-widget-custom-css`](https://github.com/electerm/electerm-widget-custom-css) | instance | 给 electerm 自己的窗口套样式表，wiki 里的 CSS 示例都在预设里 |
+| [`electerm-widget-hide-sftp-local`](https://github.com/electerm/electerm-widget-hide-sftp-local) | instance | 隐藏 sftp 面板的本地部分 |
+| [`electerm-widget-swap-sftp-panes`](https://github.com/electerm/electerm-widget-swap-sftp-panes) | instance | 远程文件放左边、本地文件放右边 |
+| [`electerm-widget-hide-ai-suggestions`](https://github.com/electerm/electerm-widget-hide-ai-suggestions) | instance | 隐藏终端上方的 AI 建议列表 |
+| [`electerm-widget-split-view-stack`](https://github.com/electerm/electerm-widget-split-view-stack) | instance | 分屏时始终上下排列终端和 sftp |
+| [`electerm-widget-terminal-bg-stretch`](https://github.com/electerm/electerm-widget-terminal-bg-stretch) | instance | 终端背景图拉伸到 100%，而不是封面模式 |
 
 每个仓库都有英文 `README.md` 和中文 `README_CN.md`，写清了配置项、实现要点和已知限制。
 `electerm-widget-passbolt-search` 另有 `TESTING.md`：一份可以用真实账号照着勾的验证流程 + 离线 mock。

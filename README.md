@@ -16,7 +16,11 @@ and copies it to `<data dir>/widgets/<id>/`.
 | [`electerm-widget-rename-files`](https://github.com/electerm/electerm-widget-rename-files) | config | Batch rename with a preview step |
 | [`electerm-widget-static-server`](https://github.com/electerm/electerm-widget-static-server) | instance | Serve a folder over HTTP |
 | [`electerm-widget-ftp-server`](https://github.com/electerm/electerm-widget-ftp-server) | instance | Serve a folder over FTP |
-| [`electerm-widget-custom-css`](https://github.com/electerm/electerm-widget-custom-css) | instance | Put a stylesheet on electerm's own window; the wiki's CSS examples as presets |
+| [`electerm-widget-hide-sftp-local`](https://github.com/electerm/electerm-widget-hide-sftp-local) | instance | Hide the local half of the SFTP panel |
+| [`electerm-widget-swap-sftp-panes`](https://github.com/electerm/electerm-widget-swap-sftp-panes) | instance | Put remote files on the left and local files on the right |
+| [`electerm-widget-hide-ai-suggestions`](https://github.com/electerm/electerm-widget-hide-ai-suggestions) | instance | Hide the AI suggestion list above the terminal |
+| [`electerm-widget-split-view-stack`](https://github.com/electerm/electerm-widget-split-view-stack) | instance | Always stack the terminal above SFTP in split view |
+| [`electerm-widget-terminal-bg-stretch`](https://github.com/electerm/electerm-widget-terminal-bg-stretch) | instance | Stretch the terminal background image to 100% instead of cover mode |
 
 Every repository has `README.md` in English and `README_CN.md` in Chinese, covering its config fields,
 implementation notes and known limits. `electerm-widget-passbolt-search` also has `TESTING.md`: a
