@@ -16,11 +16,12 @@ and copies it to `<data dir>/widgets/<id>/`.
 | [`electerm-widget-rename-files`](https://github.com/electerm/electerm-widget-rename-files) | config | Batch rename with a preview step |
 | [`electerm-widget-static-server`](https://github.com/electerm/electerm-widget-static-server) | instance | Serve a folder over HTTP |
 | [`electerm-widget-ftp-server`](https://github.com/electerm/electerm-widget-ftp-server) | instance | Serve a folder over FTP |
-| [`electerm-widget-hide-sftp-local`](https://github.com/electerm/electerm-widget-hide-sftp-local) | instance | Hide the local half of the SFTP panel |
-| [`electerm-widget-swap-sftp-panes`](https://github.com/electerm/electerm-widget-swap-sftp-panes) | instance | Put remote files on the left and local files on the right |
-| [`electerm-widget-hide-ai-suggestions`](https://github.com/electerm/electerm-widget-hide-ai-suggestions) | instance | Hide the AI suggestion list above the terminal |
-| [`electerm-widget-split-view-stack`](https://github.com/electerm/electerm-widget-split-view-stack) | instance | Always stack the terminal above SFTP in split view |
-| [`electerm-widget-terminal-bg-stretch`](https://github.com/electerm/electerm-widget-terminal-bg-stretch) | instance | Stretch the terminal background image to 100% instead of cover mode |
+| [`electerm-widget-hide-sftp-local`](https://github.com/electerm/electerm-widget-hide-sftp-local) | style | Hide the local half of the SFTP panel |
+| [`electerm-widget-swap-sftp-panes`](https://github.com/electerm/electerm-widget-swap-sftp-panes) | style | Put remote files on the left and local files on the right |
+| [`electerm-widget-hide-ai-suggestions`](https://github.com/electerm/electerm-widget-hide-ai-suggestions) | style | Hide the AI suggestion list above the terminal |
+| [`electerm-widget-split-view-stack`](https://github.com/electerm/electerm-widget-split-view-stack) | style | Always stack the terminal above SFTP in split view |
+| [`electerm-widget-terminal-bg-stretch`](https://github.com/electerm/electerm-widget-terminal-bg-stretch) | style | Stretch the terminal background image to 100% instead of cover mode |
+| [`electerm-widget-fatfish-watermark`](https://github.com/electerm/electerm-widget-fatfish-watermark) | instance | Replace the default watermark with the 大肥鱼 sprite, original or 8-colour pixel |
 
 Every repository has `README.md` in English and `README_CN.md` in Chinese, covering its config fields,
 implementation notes and known limits. `electerm-widget-passbolt-search` also has `TESTING.md`: a
@@ -63,8 +64,9 @@ one re-import away.
 
 ## The reference
 
-The API — manifest fields, config mode, instance lifecycle, the `window.electerm` bridge, the security
-model — is documented once, in the
+The API — manifest fields, config mode, instance lifecycle, the
+`@electerm/widget-api` module a server script may use, the declarations a style widget needs, the
+security model — is documented once, in the
 **[User widget guide](https://github.com/electerm/electerm/wiki/User-widget-guide)**. This repository is
 the index; that page is the manual.
 

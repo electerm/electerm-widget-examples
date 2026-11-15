@@ -16,11 +16,12 @@ widget 一个独立仓库，直接用仓库地址就能装 —— 不是玩具 d
 | [`electerm-widget-rename-files`](https://github.com/electerm/electerm-widget-rename-files) | config | 批量改名，先预览再执行 |
 | [`electerm-widget-static-server`](https://github.com/electerm/electerm-widget-static-server) | instance | 把目录用 HTTP 分享出去 |
 | [`electerm-widget-ftp-server`](https://github.com/electerm/electerm-widget-ftp-server) | instance | 把目录用 FTP 分享出去 |
-| [`electerm-widget-hide-sftp-local`](https://github.com/electerm/electerm-widget-hide-sftp-local) | instance | 隐藏 sftp 面板的本地部分 |
-| [`electerm-widget-swap-sftp-panes`](https://github.com/electerm/electerm-widget-swap-sftp-panes) | instance | 远程文件放左边、本地文件放右边 |
-| [`electerm-widget-hide-ai-suggestions`](https://github.com/electerm/electerm-widget-hide-ai-suggestions) | instance | 隐藏终端上方的 AI 建议列表 |
-| [`electerm-widget-split-view-stack`](https://github.com/electerm/electerm-widget-split-view-stack) | instance | 分屏时始终上下排列终端和 sftp |
-| [`electerm-widget-terminal-bg-stretch`](https://github.com/electerm/electerm-widget-terminal-bg-stretch) | instance | 终端背景图拉伸到 100%，而不是封面模式 |
+| [`electerm-widget-hide-sftp-local`](https://github.com/electerm/electerm-widget-hide-sftp-local) | style | 隐藏 sftp 面板的本地部分 |
+| [`electerm-widget-swap-sftp-panes`](https://github.com/electerm/electerm-widget-swap-sftp-panes) | style | 远程文件放左边、本地文件放右边 |
+| [`electerm-widget-hide-ai-suggestions`](https://github.com/electerm/electerm-widget-hide-ai-suggestions) | style | 隐藏终端上方的 AI 建议列表 |
+| [`electerm-widget-split-view-stack`](https://github.com/electerm/electerm-widget-split-view-stack) | style | 分屏时始终上下排列终端和 sftp |
+| [`electerm-widget-terminal-bg-stretch`](https://github.com/electerm/electerm-widget-terminal-bg-stretch) | style | 终端背景图拉伸到 100%，而不是封面模式 |
+| [`electerm-widget-fatfish-watermark`](https://github.com/electerm/electerm-widget-fatfish-watermark) | instance | 把默认水印换成大肥鱼，原图或 8 色像素版 |
 
 每个仓库都有英文 `README.md` 和中文 `README_CN.md`，写清了配置项、实现要点和已知限制。
 `electerm-widget-passbolt-search` 另有 `TESTING.md`：一份可以用真实账号照着勾的验证流程 + 离线 mock。
@@ -58,7 +59,8 @@ electerm/electerm-widget-passbolt-search#main
 
 ## 文档在哪
 
-接口本身 —— 清单字段、config 模式、instance 生命周期、`window.electerm` 桥、安全模型 —— 只写一遍，
+接口本身 —— 清单字段、config 模式、instance 生命周期、服务端脚本能用的 `@electerm/widget-api`、
+纯样式 widget 要声明的字段、安全模型 —— 只写一遍，
 在 **[User widget guide](https://github.com/electerm/electerm/wiki/User-widget-guide)**。这个仓库是
 索引，那一页是手册。
 
